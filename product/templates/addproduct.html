@@ -1,0 +1,71 @@
+{% extends 'admin_home.html' %}
+
+{% block head %} 
+{% include 'slider.html' %}
+{% endblock %}
+
+{% block body %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table class="table table-bordered w-50 mx-auto mt-4 shadow-sm">
+        <tbody>
+            <tr>
+                <th>Name</th>
+                <td>{{ form.name }}</td>
+            </tr>
+            <tr>
+                <th>Admin Name</th>
+                <td>{{ form.user }}</td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td>{{ form.price }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ form.description }}</td>
+            </tr>
+            <tr>
+                <th>Image</th>
+                <td>{{ form.pimg }}</td>
+            </tr>
+
+            <!-- 👇 Custom Unit Input with Plus/Minus -->
+            <tr>
+                <th>Unit</th>
+                <td>
+                    <div class="input-group" style="width: 150px;">
+                        <button class="btn btn-outline-secondary" type="button" onclick="decreaseUnit()">−</button>
+                        <input type="text" id="unitInput" name="unit" class="form-control text-center" value="1" readonly>
+                        <button class="btn btn-outline-secondary" type="button" onclick="increaseUnit()">+</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2" class="text-center">
+                    <input type="submit" value="SAVE" class="btn btn-success">
+                    <input type="reset" value="RESET" class="btn btn-secondary ms-2">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+
+<!-- ✅ JS for Plus-Minus Functionality -->
+<script>
+function increaseUnit() {
+    let input = document.getElementById('unitInput');
+    let value = parseInt(input.value);
+    input.value = value + 1;
+}
+
+function decreaseUnit() {
+    let input = document.getElementById('unitInput');
+    let value = parseInt(input.value);
+    if (value > 1) {
+        input.value = value - 1;
+    }
+}
+</script>
+{% endblock %}

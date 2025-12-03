@@ -1,0 +1,67 @@
+{% extends 'admin_home.html' %}
+
+{% block head %}
+{% include 'slider.html' %}
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4 fw-bold">🛍 Product List</h2>
+
+    {% if pl %}
+    <div class="table-responsive shadow-lg rounded">
+        <table class="table table-bordered table-hover align-middle text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price (₹)</th>
+                    <th>Description</th>
+                    <th>Image</th>
+                    <th colspan="2">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in pl %}
+                <tr>
+                    <td class="fw-semibold">{{ i.id }}</td>
+                    <td>{{ i.name }}</td>
+                    <td>₹{{ i.price }}</td>
+                    <td style="max-width: 250px;">
+                        <div class="text-truncate" title="{{ i.description }}">{{ i.description }}</div>
+                    </td>
+                    <td>
+                        <img src="{{ i.pimg.url }}" alt="{{ i.name }}" class="img-thumbnail" width="100" height="70">
+                    </td>
+                    <td>
+                        <a href="{% url 'product:edit' i.id %}" class="btn btn-sm btn-warning px-3">
+                            ✏️ Edit
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'product:delete' i.id %}" 
+                           class="btn btn-sm btn-danger px-3"
+                           onclick="return confirm('Are you sure you want to delete {{ i.name }}?')">
+                            🗑 Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center mt-4" role="alert">
+        No products found 🛒 <a href="{% url 'product:add' %}" class="alert-link">Add New Product</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- 🩵 Optional Hover Effect -->
+<style>
+    table tbody tr:hover {
+        background-color: #f8f9fa;
+        transition: 0.3s;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,22 @@
+<h2 class="text-center mt-4">All Orders (Admin)</h2>
+<table class="table table-bordered text-center">
+    <tr>
+        <th>ID</th>
+        <th>User</th>
+        <th>Product</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    {% for o in orders %}
+    <tr>
+        <td>{{ o.id }}</td>
+        <td>{{ o.user }}</td>
+        <td>{{ o.product.name }}</td>
+        <td>{{ o.status }}</td>
+        <td>
+            <a href="{% url 'order:update' o.id %}" class="btn btn-warning btn-sm">Update</a>
+            <a href="{% url 'order:delete' o.id %}" class="btn btn-danger btn-sm">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>

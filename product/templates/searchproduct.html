@@ -1,0 +1,40 @@
+{% extends 'main.html' %}
+
+{% block body %}
+<section class="py-5 bg-light">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            {% for i in pl %}
+            <div class="col mb-5">
+                <div class="card h-100 shadow-sm">
+                    <!-- Product image -->
+                    <img class="card-img-top" src="{{ i.pimg.url }}" alt="{{ i.name }}" style="height:200px; object-fit:cover;">
+                    
+                    <!-- Product details -->
+                    <div class="card-body p-3">
+                        <div class="text-center">
+                            <h5 class="fw-bolder text-truncate">{{ i.name }}</h5>
+                            <!-- Product price -->
+                            <p class="text-muted mb-2"><strong>RS.</strong> {{ i.price }}</p>
+                            <!-- Star ratings -->
+                            <div class="d-flex justify-content-center mb-2">
+                                {% for star in "★★★★★" %}
+                                    <span class="text-warning me-1">{{ star }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Product actions -->
+                    <div class="card-footer p-3 pt-0 border-top-0 bg-transparent">
+                        <div class="text-center">
+                            <a class="btn btn-outline-success w-100" href="{% url 'cart:add' i.id %}">Add to Cart 🛒</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

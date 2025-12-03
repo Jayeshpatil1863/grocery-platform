@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8f9fa, #e3f2fd);
+            min-height: 100vh;
+        }
+
+        h2 {
+            font-weight: 700;
+            color: #0d6efd;
+            text-shadow: 1px 1px #ccc;
+        }
+
+        .table {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .table img {
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .table img:hover {
+            transform: scale(1.1);
+        }
+
+        .btn {
+            border-radius: 50px;
+            padding: 5px 10px;
+        }
+
+        .btn-outline-success:hover {
+            color: white;
+        }
+
+        .total-section {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            padding: 15px 25px;
+            margin-top: 20px;
+        }
+
+        .btn-outline-dark {
+            border-radius: 30px;
+            padding: 10px 25px;
+        }
+
+        .remove-link {
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .remove-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">🛒 My Shopping Cart</h2>
+
+    {% if cl %}
+    <div class="table-responsive">
+        <table class="table text-center align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Product</th>
+                    <th>Image</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cl %}
+                <tr>
+                    <td>{{ item.id }}</td>
+                    <td class="fw-semibold">{{ item.name }}</td>
+                    <td><img src="{{ item.image.url }}" width="90" height="70"></td>
+                    <td class="text-success fw-semibold">₹{{ item.price }}</td>
+                    <td>
+                        <a href="{% url 'cart:decrease' item.id %}" class="btn btn-sm btn-outline-danger">−</a>
+                        <span class="mx-2 fw-bold">{{ item.quantity }}</span>
+                        <a href="{% url 'cart:increase' item.id %}" class="btn btn-sm btn-outline-success">+</a>
+                    </td>
+                    <td class="fw-bold text-primary">₹{{ item.total_price }}</td>
+                    <td><a href="{% url 'cart:delete' item.id %}" class="remove-link">Remove ❌</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="total-section text-end">
+        <h4 class="fw-bold">Grand Total: <span class="text-success">₹{{ total }}</span></h4>
+        <div class="text-center mt-3">
+            <a href="/" class="btn btn-outline-dark">← Continue Shopping</a>
+            <a href="{% url 'orderapp:checkout' %}" class="btn btn-success ms-2">Proceed to Checkout ➤</a>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="alert alert-warning text-center mt-5 fs-5 shadow-sm">
+        No items in your cart 🛒<br>
+        <a href="/" class="btn btn-primary mt-3">Start Shopping</a>
+    </div>
+    {% endif %}
+</div>
+
+</body>
+</html>

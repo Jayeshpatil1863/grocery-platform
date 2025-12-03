@@ -1,0 +1,36 @@
+{% extends 'main.html' %}
+
+{% block body %}
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-sm p-4" style="max-width: 450px; width: 100%;">
+        <h2 class="text-center mb-4 fw-bold">Login to Your Account</h2>
+
+        {% if lmg %}
+            <div class="alert alert-danger text-center">{{ lmg }}</div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="uname" class="form-label">Username</label>
+                <input type="text" name="uname" id="uname" class="form-control" placeholder="Enter your username" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="passw" class="form-label">Password</label>
+                <input type="password" name="passw" id="passw" class="form-control" placeholder="Enter your password" required>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <button type="submit" class="btn btn-primary">Login</button>
+                <a href="{% url 'account:password_reset' %}">Forgot Password?</a>
+            </div>
+
+            <p class="text-center mt-3 small">
+                Don't have an account? <a href="{% url 'account:add' %}">Register here</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}

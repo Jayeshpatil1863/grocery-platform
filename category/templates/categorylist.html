@@ -1,0 +1,28 @@
+
+{%extends 'main.html'%}
+
+{% block head%} 
+{%include 'slider.html'%}
+{%endblock%}
+
+{%block body%}
+<table class="table">
+
+    <tr>
+        <th>ID</th>
+        <th>NAME</th>
+        <th>DESCRIPTION</th>
+        <th colspan="2">Action</th>
+    </tr>
+    {%for i in cl%}
+        <tr>
+            <td>{{i.id}}</td>
+            <td>{{i.name}}</td>
+            <td> <textarea cols="40" rows="3">{{i.description}} </textarea></td>
+            <td><a href="">Delete</a></td>
+            <td><a href="">EDIT</a></td>
+        </tr>
+    {%endfor%}
+</table>
+
+{%endblock%}

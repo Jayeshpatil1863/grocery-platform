@@ -1,0 +1,11 @@
+<h3>Update Order Status</h3>
+<form method="POST">
+    {% csrf_token %}
+    <select name="status" class="form-select">
+        <option value="Pending">Pending</option>
+        <option value="Packed">Packed</option>
+        <option value="Delivered">Delivered</option>
+        <option value="Cancelled">Cancelled</option>
+    </select>
+    <button type="submit" class="btn btn-primary mt-2">Update</button>
+</form>

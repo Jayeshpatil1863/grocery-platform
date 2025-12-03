@@ -1,0 +1,35 @@
+<footer class="py-5 bg-dark text-white">
+    <div class="container text-center">
+        <!-- Brand / Logo -->
+        <h5 class="fw-bold mb-3">🛍 Grocery Platform</h5>
+
+        <!-- Quick links -->
+        <div class="mb-3">
+            <a href="/" class="text-white mx-2 text-decoration-none">Home</a> |
+            <a href="{% url 'product:list' %}" class="text-white mx-2 text-decoration-none">Products</a> |
+            <a href="{% url 'cart:viewcart' %}" class="text-white mx-2 text-decoration-none">Cart</a> |
+            <a href="{% url 'account:add' %}" class="text-white mx-2 text-decoration-none">Register</a>
+        </div>
+
+        <!-- Social Icons -->
+        <div class="mb-3">
+            <a href="#" class="text-white mx-2"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="text-white mx-2"><i class="bi bi-twitter"></i></a>
+            <a href="#" class="text-white mx-2"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="text-white mx-2"><i class="bi bi-linkedin"></i></a>
+        </div>
+
+        <!-- Copyright -->
+        <p class="m-0 small">&copy; 2023 Grocery Platform. All rights reserved.</p>
+    </div>
+</footer>
+
+<style>
+footer a:hover {
+    color: #ffc107; /* Amber color on hover */
+    transition: 0.3s;
+}
+footer i {
+    font-size: 1.2rem;
+}
+</style>

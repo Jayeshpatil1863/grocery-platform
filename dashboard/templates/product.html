@@ -1,0 +1,100 @@
+
+<!-- Section Divider -->
+<hr class="my-5">
+{% include 'graph.html' %}
+
+<!-- ================= Product Management Table ================= -->
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-3">
+        <h3 class="fw-bold">Manage Products</h3>
+
+        <a href="{% url 'product:add' %}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Add Product
+        </a>
+    </div>
+
+    <table class="table table-bordered table-striped shadow-sm rounded-3">
+        <thead class="bg-dark text-white">
+            <tr>
+                <th>#</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Description</th>
+                <th>Stock</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for p in pl %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+
+                <td>
+                    <img src="{{ p.pimg.url }}" width="60" height="60" 
+                         style="object-fit:cover; border-radius:6px;">
+                </td>
+
+                <td>{{ p.name }}</td>
+                <td>₹{{ p.price }}</td>
+                <td>{{ p.description|truncatechars:50 }}</td>
+                <td>{{ p.unit }}</td>
+
+                <td>
+                    <a href="{% url 'product:edit' p.id %}" 
+                       class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+
+                    <a href="{% url 'product:delete' p.id %}" 
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('Are you sure to delete?');">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if pl.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ pl.previous_page_number }}">Prev</a>
+                </li>
+            {% endif %}
+
+            {% for num in pl.paginator.page_range %}
+                {% if pl.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if pl.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ pl.next_page_number }}">Next</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+<!-- Card hover effect -->
+<style>
+.dashboard-card {
+    transition: 0.3s ease-in-out;
+}
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+}
+</style>

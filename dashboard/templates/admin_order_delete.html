@@ -1,0 +1,14 @@
+{% extends 'admin_home.html' %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-danger">Delete Order #{{ order.id }}</h2>
+    <p>Are you sure you want to delete this order for <strong>{{ order.user.username }}</strong> - <strong>{{ order.product_name }}</strong>?</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url 'dashboard:orders' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
