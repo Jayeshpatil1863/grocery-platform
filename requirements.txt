@@ -1,0 +1,10 @@
+Django
+gunicorn
+psycopg2-binary
+dj-database-url
+whitenoise
+Pillow
+django-widget-tweaks
+requests
+sqlparse
+asgiref
