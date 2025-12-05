@@ -48,6 +48,210 @@
 
     </div>
 </div>
+<div class="container mt-4" style="max-width:700px;">
 
-{% endblock %} 
+  <!-- Product rating summary (optional) -->
+  {% with avg=product.reviews.aggregate_avg|default:"" %}
+  {% comment %} If you compute avg in view, show it. Otherwise optional. {% endcomment %}
+  {% if avg %}
+  <div class="d-flex align-items-center mb-3">
+    <h5 class="me-3 mb-0">Average Rating:</h5>
+    <div class="fw-bold" style="font-size:18px; color:#ffc107;">{{ avg|floatformat:1 }} ★</div>
+  </div>
+  {% endif %}
+  {% endwith %}    {# <- endwith #}
 
+  <h3 class="fw-bold mb-3">User Reviews ✨</h3>
+
+  {% if reviews_page.object_list %}
+    {% for r in reviews_page.object_list %}
+      <div class="card mb-3 shadow-sm" style="border-radius:12px; overflow:hidden;">
+        <div class="card-body d-flex gap-3">
+          <!-- Avatar -->
+          <div style="width:56px; flex:0 0 56px;">
+            <div style="width:56px; height:56px; border-radius:10px; overflow:hidden; background:#f1f3f5; display:flex; align-items:center; justify-content:center;">
+              {% if r.user and r.user.profile and r.user.profile.image %}
+                <img src="{{ r.user.profile.image.url }}" alt="{{ r.user.username }}" style="width:100%;height:100%;object-fit:cover;">
+              {% else %}
+                <span class="text-muted" style="font-weight:700;">{{ r.user.username|slice:":1"|upper }}</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div style="flex:1;">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="fw-bold">{{ r.user.username }}</div>
+                <div class="text-muted small">{{ r.user.email }}</div>
+              </div>
+              <div class="text-end">
+                <span style="background:#fff3cd; color:#856404; padding:6px 10px; border-radius:12px; font-weight:600;">
+                  {{ r.rating }} ★
+                </span>
+              </div>
+            </div>
+
+            <p class="mt-2 mb-1" style="line-height:1.4; color:#333;">{{ r.comment }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">{{ r.created_at|date:"d M Y, h:i A" }}</small>
+
+              {% if request.user.is_authenticated and r.user == request.user %}
+                <form method="post" action="{% url 'account:delete_review' r.id %}" style="margin:0;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger" style="padding:4px 8px; font-size:13px;"
+                          onclick="return confirm('Are you sure you want to delete your review?');">
+                    Delete
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="text-center py-4 text-muted">No reviews yet — be the first to add one!</div>
+  {% endif %}
+
+  <!-- Pagination -->
+  {% if reviews_page.paginator.num_pages > 1 %}
+  <nav class="mt-2" aria-label="reviews pagination">
+    <ul class="pagination justify-content-center">
+      {% if reviews_page.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ reviews_page.previous_page_number }}">Previous</a></li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+      {% endif %}
+
+      {% for p in reviews_page.paginator.page_range %}
+        {% if p == reviews_page.number %}
+          <li class="page-item active" aria-current="page"><span class="page-link">{{ p }}</span></li>
+        {% else %}
+          <li class="page-item"><a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+        {% endif %}
+      {% endfor %}
+
+      {% if reviews_page.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ reviews_page.next_page_number }}">Next</a></li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Next</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  <hr class="my-4">
+
+  <!-- Add Review Form -->
+  <div class="card p-3" style="border-radius:12px;">
+    <h5 class="mb-3">Add Your Review</h5>
+
+    <form method="POST" action="{% url 'account:add_review' product.id %}">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label class="form-label">Rating (1–5)</label>
+        <div class="d-flex gap-2 rating-stars">
+          <!-- Simple star inputs -->
+          {% for i in "12345" %}
+            <label style="cursor:pointer;">
+              <input type="radio" name="rating" value="{{ forloop.counter }}" style="display:none;">
+              <span>{{ forloop.counter }} ★</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Your review</label>
+        <textarea name="comment" class="form-control" rows="3" required placeholder="Share your experience..."></textarea>
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-success">Submit Review ⭐</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<!-- Star selection styles + script -->
+<style>
+  .rating-stars label span {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: #f8f9fa;
+    transition: 0.15s ease;
+    font-weight: 700;
+  }
+
+  .rating-stars label span:hover {
+    background: #ffeeba;
+    border-color: #ffdf7e;
+  }
+
+  .rating-stars .selected {
+    background: #ffc107;
+    border-color: #e0a800;
+    color: #000;
+    box-shadow: 0 2px 6px rgba(255, 193, 7, 0.35);
+    transform: translateY(-2px);
+  }
+
+  /* keyboard focus outline */
+  .rating-stars label:focus-within span {
+    outline: 2px solid rgba(13,110,253,0.18);
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const labels = Array.from(document.querySelectorAll(".rating-stars label"));
+
+    if (!labels.length) return;
+
+    const radios = labels.map(l => l.querySelector('input[type="radio"]'));
+    const spans = labels.map(l => l.querySelector('span'));
+
+    function clearSelected() {
+      spans.forEach(s => s.classList.remove('selected'));
+    }
+
+    function updateVisualFromChecked() {
+      clearSelected();
+      radios.forEach((r, idx) => {
+        if (r && r.checked) spans[idx].classList.add('selected');
+      });
+    }
+
+    labels.forEach((label, idx) => {
+      // make focusable
+      if (!label.hasAttribute('tabindex')) label.setAttribute('tabindex', '0');
+
+      label.addEventListener('click', function (e) {
+        // set radio checked (should happen by browser), then update visuals
+        const r = radios[idx];
+        if (r) r.checked = true;
+        updateVisualFromChecked();
+      });
+
+      label.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const r = radios[idx];
+          if (r) r.checked = true;
+          updateVisualFromChecked();
+        }
+      });
+    });
+
+    // initialize (in case browser restored checked state)
+    updateVisualFromChecked();
+  });
+</script>
+
+{% endblock %}

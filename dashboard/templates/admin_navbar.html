@@ -1,4 +1,5 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
     <div class="container px-4 px-lg-5">
         
         <a class="navbar-brand fw-bold" href="/dashboard/">🛍 Grocery Platform</a>
@@ -27,6 +28,9 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
 
                 {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="{% url 'dashboard:p_reviews' %}">Products Reviews</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link fw-semibold" href="{% url 'dashboard:orders' %}">All Orders</a>
                 </li>

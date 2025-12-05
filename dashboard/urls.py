@@ -17,5 +17,8 @@ urlpatterns = [
     path("users/",v.Users,name="users"),
     path("user_delete/<int:id>/",v.user_delete,name="user_delete"),
     path("user_edit/<int:id>/",v.user_edit,name="user_edit"), 
+    path("product-reviews/", v.product_reviews, name="p_reviews"),
+    path("review/<int:id>/delete/", v.delete_review, name="delete_review"),
+    path("detail/<int:id>/", v.admin_product_detail, name="detail"), 
 ] 
  

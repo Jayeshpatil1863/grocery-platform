@@ -1,9 +1,10 @@
+from pyexpat.errors import messages
 from django.shortcuts import get_object_or_404, redirect, render
 
 from orderapp.models import Order, OrderForm
 from product.models import Product, ProductForm
-
-from account.models import UserProfile
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from account.models import ProductReview, UserProfile
 
 def jayesh(request):
     p= Product.objects.all()
@@ -147,3 +148,54 @@ def user_edit(request, id):
         user.save()
         return redirect('dashboard:users')
     return render(request, 'user_edit.html', {'user': user})
+
+def product_reviews(request):
+    """
+    Admin view: list product reviews with search and pagination.
+    Search fields: user.username, product.name, comment, rating
+    """
+    q = request.GET.get('q', '').strip()
+    reviews_qs = ProductReview.objects.select_related('product', 'user').all().order_by('-created_at')
+
+    if q:
+        # Try to match numeric rating query too if q is a number
+        rating_filter = None
+        if q.isdigit():
+            rating_filter = Q(rating=int(q))
+
+        reviews_qs = reviews_qs.filter(
+            Q(user__username__icontains=q) |
+            Q(product__name__icontains=q) |
+            Q(comment__icontains=q) |
+            (rating_filter if rating_filter is not None else Q())
+        )
+
+    # Pagination: 12 reviews per page (adjust as needed)
+    paginator = Paginator(reviews_qs, 12)
+    page = request.GET.get('page', 1)
+    try:
+        reviews_page = paginator.page(page)
+    except PageNotAnInteger:
+        reviews_page = paginator.page(1)
+    except EmptyPage:
+        reviews_page = paginator.page(paginator.num_pages)
+
+    context = {
+        'reviews': reviews_page,
+        'q': q,  # pass current query to template so we can keep it in the search box & links
+    }
+    return render(request, 'product_reviews.html', context)
+
+def delete_review(request, id):
+    review = get_object_or_404(ProductReview, id=id)
+
+    if request.method == "POST":
+        review.delete()
+        messages.success(request, "Review deleted successfully.")
+        return redirect("dashboard:p_reviews")
+
+    return redirect("dashboard:p_reviews")
+
+def admin_product_detail(request, id):
+    product = get_object_or_404(Product, id=id)
+    return render(request, "admin_product_detail.html", {'product': product})

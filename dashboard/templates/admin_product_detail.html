@@ -1,0 +1,129 @@
+{% extends 'admin_home.html' %}
+{% load static %}
+
+{% block body %}
+
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-sm p-4" style="max-width: 700px; width: 100%; border-radius: 15px;">
+
+        <div class="row g-4">
+
+            <div class="col-md-5">
+                <div class="image-wrapper" style="
+                    width: 100%;
+                    height: 250px;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+                    background: #f8f8f8;
+                ">
+                    <img src="{{ product.pimg.url }}" 
+                         style="width: 100%; height: 100%; object-fit: cover; transition: 0.3s;">
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <h2 class="fw-bold">{{ product.name }}</h2>
+
+                <p style="font-size: 26px; font-weight: bold; color: #28a745;">
+                    ₹{{ product.price }}
+                </p>
+                
+
+                <p class="text-secondary" style="font-size: 16px;">
+                    {{ product.description }}
+                </p>
+
+                <a href="{% url 'cart:add' product.id %}" 
+                   class="btn btn-primary mt-3 px-4 py-2" style="border-radius: 10px;">
+                    Add to Cart 🛒
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="container mt-4" style="max-width: 700px;">
+
+    <h3 class="fw-bold mb-3">User Reviews ✨</h3>
+
+    {% if reviews_page.object_list %}
+        {% for r in reviews_page.object_list %}
+            <div class="p-3 mb-3 shadow-sm d-flex justify-content-between" style="border-radius: 10px; background: #fafafa;">
+                <div>
+                    <p><strong>{{ r.user.username }}</strong> — 
+                        <span style="color: #ffd700;">{{ r.rating }}⭐</span>
+                    </p>
+                    <p>{{ r.comment }}</p>
+                    <small class="text-muted">{{ r.created_at }}</small>
+                </div>
+
+                {% if request.user.is_authenticated and r.user == request.user %}
+                    <div class="align-self-start">
+                        <form method="post" action="{% url 'account:delete_review' r.id %}" onsubmit="return confirm('Are you sure you want to delete your review?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">No reviews yet. Be the first to review! ⭐</p>
+    {% endif %}
+
+    <!-- Pagination -->
+    {% if reviews_page.paginator.num_pages > 1 %}
+    <nav aria-label="Reviews pagination">
+      <ul class="pagination">
+        {% if reviews_page.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ reviews_page.previous_page_number }}">Previous</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+
+        {% for p in reviews_page.paginator.page_range %}
+          {% if p == reviews_page.number %}
+            <li class="page-item active"><span class="page-link">{{ p }}</span></li>
+          {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+          {% endif %}
+        {% endfor %}
+
+        {% if reviews_page.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ reviews_page.next_page_number }}">Next</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+
+    <hr>
+
+    <h4 class="fw-bold mt-4">Add Your Review</h4>
+
+    <form method="POST" action="{% url 'account:add_review' product.id %}">
+        {% csrf_token %}
+        
+        <label class="mt-2">Rating (1–5):</label>
+        <input type="number" name="rating" min="1" max="5" required class="form-control">
+
+        <label class="mt-2">Your review:</label>
+        <textarea name="comment" required class="form-control" rows="3"></textarea>
+
+        <button type="submit" class="btn btn-success mt-3">Submit Review ⭐</button>
+    </form>
+
+</div>
+
+
+
+{% endblock %} 
+
