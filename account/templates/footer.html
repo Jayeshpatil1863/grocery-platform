@@ -1,35 +1,124 @@
-<footer class="py-5 bg-dark text-white">
-    <div class="container text-center">
-        <!-- Brand / Logo -->
-        <h5 class="fw-bold mb-3">🛍 Grocery Platform</h5>
+<footer class="premium-footer pt-5 pb-4 text-white">
+    <div class="container">
 
-        <!-- Quick links -->
-        <div class="mb-3">
-            <a href="/" class="text-white mx-2 text-decoration-none">Home</a> |
-            <a href="{% url 'product:list' %}" class="text-white mx-2 text-decoration-none">Products</a> |
-            <a href="{% url 'cart:viewcart' %}" class="text-white mx-2 text-decoration-none">Cart</a> |
-            <a href="{% url 'account:add' %}" class="text-white mx-2 text-decoration-none">Register</a>
+        <div class="row text-center text-md-start align-items-start">
+
+            <!-- Brand -->
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold footer-brand mb-2">🛍 Grocery Platform</h5>
+                <p class="footer-text small">
+                    Fresh groceries delivered to your doorstep with speed, safety, and quality.
+                </p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-md-4 mb-4">
+                <h6 class="fw-bold mb-3 footer-title">Quick Links</h6>
+                <div class="d-flex flex-column gap-2 align-items-center align-items-md-start">
+                    <a href="/" class="footer-link">Home</a>
+                    <a href="{% url 'product:list' %}" class="footer-link">Products</a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'cart:viewcart' %}" class="footer-link">Cart</a>
+                    {%endif%}
+                    <a href="{% url 'account:add' %}" class="footer-link">Register</a>
+                </div>
+            </div>
+
+            <!-- Social Icons -->
+            <div class="col-md-4 mb-4">
+                <h6 class="fw-bold mb-3 footer-title">Follow Us</h6>
+                <div class="d-flex justify-content-center justify-content-md-start gap-3">
+                    <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-icon"><i class="bi bi-twitter"></i></a>
+                    <a href="https://www.instagram.com/mr.jayesh_02" class="social-icon"><i class="bi bi-instagram"></i></a>
+                    <a href="https://www.linkedin.com/in/jayeshpatil02" class="social-icon"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+
         </div>
 
-        <!-- Social Icons -->
-        <div class="mb-3">
-            <a href="#" class="text-white mx-2"><i class="bi bi-facebook"></i></a>
-            <a href="#" class="text-white mx-2"><i class="bi bi-twitter"></i></a>
-            <a href="#" class="text-white mx-2"><i class="bi bi-instagram"></i></a>
-            <a href="#" class="text-white mx-2"><i class="bi bi-linkedin"></i></a>
+        <hr class="footer-divider">
+
+        <div class="text-center small footer-bottom-text">
+            &copy; 2025 Grocery Platform. All rights reserved.
         </div>
 
-        <!-- Copyright -->
-        <p class="m-0 small">&copy; 2023 Grocery Platform. All rights reserved.</p>
     </div>
 </footer>
 
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
 <style>
-footer a:hover {
-    color: #ffc107; /* Amber color on hover */
-    transition: 0.3s;
+/* Main Footer */
+.premium-footer {
+    background: linear-gradient(135deg, #020617, #0f172a);
+    border-top: 1px solid rgba(255,255,255,0.08);
 }
-footer i {
-    font-size: 1.2rem;
+
+/* Brand */
+.footer-brand {
+    background: linear-gradient(90deg, #22c55e, #0d6efd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: #22c55e; /* fallback */
+}
+
+/* Titles */
+.footer-title {
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #e5e7eb;
+}
+
+/* Normal text */
+.footer-text {
+    color: #9ca3af;
+    line-height: 1.6;
+}
+
+/* Links */
+.footer-link {
+    color: #cbd5f5;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+}
+.footer-link:hover {
+    color: #facc15;
+    transform: translateX(4px);
+}
+
+/* Social icons */
+.social-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e5e7eb;
+    font-size: 1.1rem;
+    transition: all 0.25s ease;
+    box-shadow: 0 8px 20px rgba(15,23,42,0.6);
+}
+.social-icon:hover {
+    color: #22c55e;
+    background: rgba(34,197,94,0.2);
+    transform: translateY(-3px);
+}
+
+/* Divider */
+.footer-divider {
+    border-color: rgba(255,255,255,0.12);
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/* Bottom text */
+.footer-bottom-text {
+    color: #9ca3af;
 }
 </style>
