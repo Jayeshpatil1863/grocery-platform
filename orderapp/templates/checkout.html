@@ -6,137 +6,287 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Grocery Platform</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+    /* Page background */
     body { 
-        background: #f8f9fa; 
+        background: radial-gradient(circle at top left, #e0f2fe 0%, #f9fafb 40%, #e5e7eb 100%);
         min-height: 100vh; 
-        overflow-y: auto;  /* scroll enable */
+        overflow-y: auto;
+        display: flex;
+        justify-content: center;
     }
 
-    h2 { 
-        color: #0d6efd; 
-        font-weight: 700; 
+    /* Wrapper */
+    .checkout-wrapper {
+        margin-top: 32px;
+        margin-bottom: 40px;
+        width: 100%;
+        max-width: 1100px;
     }
 
-    .total-section { 
-        background: #fff; 
-        border-radius: 10px; 
-        box-shadow: 0 3px 10px rgba(0,0,0,0.1); 
-        padding: 20px; 
+    /* Heading */
+    .checkout-heading {
+        font-weight: 800;
+        font-size: 2rem;
+        text-align: center;
+        margin-bottom: 6px;
+        background: linear-gradient(90deg, #0d6efd, #22c55e);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: #0d6efd; /* fallback */
     }
 
-    .container {
-        padding-bottom: 120px; /* Button safe zone */
+    .checkout-subtitle {
+        text-align: center;
+        color: #6b7280;
+        margin-bottom: 22px;
+        font-size: 0.95rem;
     }
-</style>
 
+    /* Layout: left+right column */
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+        gap: 20px;
+    }
+
+    @media (max-width: 991.98px) {
+        .checkout-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Cards */
+    .checkout-card {
+        background: rgba(255,255,255,0.96);
+        border-radius: 18px;
+        box-shadow: 0 18px 40px rgba(15,23,42,0.18);
+        border: 1px solid rgba(209,213,219,0.9);
+        padding: 18px 20px;
+    }
+
+    .checkout-card-header {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #6b7280;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    /* Total / slot card */
+    .total-card h4 {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+    .total-amount {
+        font-weight: 800;
+        font-size: 1.6rem;
+        color: #22c55e;
+    }
+
+    .delivery-slot-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-top: 8px;
+        margin-bottom: 4px;
+    }
+
+    /* Address cards */
+    .address-card {
+        border-radius: 14px;
+        padding: 12px 14px;
+        border: 1px solid rgba(209,213,219,0.9);
+        background: #f9fafb;
+        transition: 0.25s ease;
+    }
+    .address-card:hover {
+        border-color: #0d6efd;
+        box-shadow: 0 10px 26px rgba(37,99,235,0.18);
+        background: #ffffff;
+    }
+
+    .address-card input[type="radio"] {
+        accent-color: #0d6efd;
+        margin-right: 8px;
+    }
+
+    .address-name {
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .address-text {
+        font-size: 0.9rem;
+        color: #4b5563;
+    }
+
+    .address-phone {
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    /* Add new address toggle */
+    .form-check-label.fw-bold {
+        cursor: pointer;
+    }
+
+    /* New address form */
+    #new_address {
+        background: #f9fafb;
+        border-radius: 14px;
+        padding: 12px 14px;
+        border: 1px dashed #cbd5e1;
+    }
+    #new_address p {
+        margin-bottom: 10px;
+    }
+    #new_address label {
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* Save order button */
+    .btn-save-order {
+        margin-top: 18px;
+        width: 100%;
+        border-radius: 999px;
+        padding: 11px 18px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        border: none;
+        color: #ffffff;
+        box-shadow: 0 12px 28px rgba(34,197,94,0.45);
+    }
+    .btn-save-order:hover {
+        filter: brightness(0.97);
+        box-shadow: 0 16px 32px rgba(21,128,61,0.6);
+    }
+
+    </style>
 </head>
 <body>
 
-<div class="container mt-4">
-    <h2 class="text-center mb-4">🛒 Checkout</h2>
+<div class="checkout-wrapper container">
+
+    <h2 class="checkout-heading">🛒 Checkout</h2>
+    <p class="checkout-subtitle">Review your total, choose a delivery slot and confirm your address.</p>
 
     <form method="POST" action="{% url 'orderapp:checkout' %}">
         {% csrf_token %}
 
         <input type="hidden" name="add_new_address" id="add_new_address" value="no">
 
-        <div class="total-section mb-4">
-            <h4>Total: <span class="text-success">₹{{ total }}</span></h4>
+        <div class="checkout-grid">
 
-            <label class="fw-bold">Select Delivery Slot:</label>
-            {{ order_form.delivery_slot|add_class:"form-select" }}
-        </div>
+            <!-- LEFT: Addresses -->
+            <div>
+                <div class="checkout-card mb-3">
+                    <div class="checkout-card-header">
+                        Delivery Address
+                    </div>
 
-        <h4 class="mb-2">Select Delivery Address</h4>
+                    {% if addresses %}
+                        {% for addr in addresses %}
+                        <div class="address-card mb-2">
+                            <label class="w-100">
+                                <input type="radio" name="selected_address" value="{{ addr.id }}" required>
+                                <span class="address-name">{{ addr.full_name }}</span><br>
+                                <span class="address-text">
+                                    {{ addr.address_line }}, {{ addr.city }} - {{ addr.pincode }}
+                                </span><br>
+                                <span class="address-phone">Phone: {{ addr.phone }}</span>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted mb-1">No saved addresses found.</p>
+                        <p class="text-muted small">Please add a new delivery address below.</p>
+                    {% endif %}
 
-        {% if addresses %}
-            {% for addr in addresses %}
-            <div class="card p-3 mb-2">
-                <label style="cursor:pointer">
-                    <input type="radio" name="selected_address" value="{{ addr.id }}" required>
-                    <strong>{{ addr.full_name }}</strong><br>
-                    {{ addr.address_line }}, {{ addr.city }} - {{ addr.pincode }} <br>
-                    Phone: {{ addr.phone }}
-                </label>
+                    <div class="form-check mt-3">
+                        <input type="checkbox" class="form-check-input" id="add_new" onclick="toggleAddress()">
+                        <label class="form-check-label fw-bold" for="add_new">
+                            Add New Address
+                        </label>
+                    </div>
+
+                    <div id="new_address" style="display:none;" class="mt-3">
+                        {{ address_form.as_p }}
+                    </div>
+                </div>
             </div>
-            {% endfor %}
-        {% else %}
-            <p class="text-muted">No saved addresses found.</p>
-        {% endif %}
 
-        <div class="form-check mt-3">
-            <input type="checkbox" class="form-check-input" id="add_new" onclick="toggleAddress()">
-            <label class="form-check-label fw-bold">Add New Address</label>
+            <!-- RIGHT: Total & slot -->
+            <div>
+                <div class="checkout-card total-card mb-3">
+                    <div class="checkout-card-header">
+                        Order Summary
+                    </div>
+
+                    <h4 class="mb-2">Total Payable</h4>
+                    <div class="mb-3">
+                        <span class="total-amount">₹{{ total }}</span>
+                    </div>
+
+                    <label class="delivery-slot-label">Select Delivery Slot</label>
+                    {{ order_form.delivery_slot|add_class:"form-select" }}
+                </div>
+
+                <button type="submit" class="btn btn-save-order">
+                    Save Order & Continue
+                </button>
+            </div>
+
         </div>
-
-        <div id="new_address" style="display:none;" class="mt-3">
-            {{ address_form.as_p }}
-        </div>
-
-        <button type="submit" class="btn btn-success mt-4 mb-4 w-100">Save Order</button>
-
-
     </form>
 </div>
 
 <script>
 function toggleAddress() {
     let newAddressBox = document.getElementById("new_address");
-    // Naye form ke saare inputs, selects, aur textareas ko target karo
     let newAddressInputs = newAddressBox.querySelectorAll('input, select, textarea');
     let hiddenFlag = document.getElementById("add_new_address");
     let checkbox = document.getElementById("add_new");
-    // Purane address ke saare radio buttons ko target karo
     let oldAddressRadios = document.querySelectorAll('input[name="selected_address"]');
 
     if (checkbox.checked) {
-        // ---- JAB "ADD NEW" CHECKED HAI ----
         newAddressBox.style.display = "block";
         hiddenFlag.value = "yes";
 
-        // 1. Naye form ke inputs ko ENABLE karo (taaki yeh validate ho sake)
         newAddressInputs.forEach(input => input.disabled = false);
 
-        // 2. Purane address wale radio buttons ko DISABLE karo
         oldAddressRadios.forEach(radio => {
             radio.disabled = true;
-            radio.checked = false; // Selection bhi hata do
+            radio.checked = false;
         });
 
     } else {
-        // ---- JAB "ADD NEW" UNCHECKED HAI ----
         newAddressBox.style.display = "none";
         hiddenFlag.value = "no";
 
-        // 1. (YEH HAI FIX) Naye form ke inputs ko DISABLE karo
-        // Isse browser inko validation ke liye check nahi karega
         newAddressInputs.forEach(input => input.disabled = true);
 
-        // 2. Purane address wale radio buttons ko ENABLE karo (taaki yeh select ho sake)
         oldAddressRadios.forEach(radio => radio.disabled = false);
     }
 }
 
-// YEH BHI IMPORTANT HAI: Page load hote hi function ko ek baar run karo
-// Taa ki by default new address form disabled rahe
 document.addEventListener("DOMContentLoaded", function() {
-    // Shuru mein hi naye address form ke inputs ko disable kar do
     let newAddressInputs = document.getElementById("new_address").querySelectorAll('input, select, textarea');
     newAddressInputs.forEach(input => input.disabled = true);
 
-    // Agar koi old address nahi hai, toh new address form ko by default
-    // checked aur enabled rakho
     let oldAddressRadios = document.querySelectorAll('input[name="selected_address"]');
     if (oldAddressRadios.length === 0) {
         let checkbox = document.getElementById("add_new");
         checkbox.checked = true;
-        checkbox.disabled = true; // User ko uncheck na karne dein agar koi old address nahi hai
-        toggleAddress(); // Function ko call karo taaki form dikhe aur enable ho
+        checkbox.disabled = true;
+        toggleAddress();
     }
 });
 </script>
+
 </body>
 </html>

@@ -1,66 +1,72 @@
-
 <!-- Section Divider -->
 <span class="m-5"></span>
 {% include 'graph.html' %}
 
-<!-- ================= Product Management Table ================= -->
-<div class="container mt-4">
-    <div class="d-flex justify-content-between mb-3">
-        <h3 class="fw-bold">Manage Products</h3>
+<!-- ================= Premium Product Management ================= -->
+<div class="container mt-5">
 
-        <a href="{% url 'product:add' %}" class="btn btn-success">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold premium-title">Manage Products</h3>
+
+        <a href="{% url 'product:add' %}" class="btn btn-premium-add">
             <i class="bi bi-plus-circle"></i> Add Product
         </a>
     </div>
 
-    <table class="table table-bordered table-striped shadow-sm rounded-3">
-        <thead class="bg-dark text-white">
-            <tr>
-                <th>#</th>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Description</th>
-                <th>Stock</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+    <!-- Premium Table Wrapper -->
+    <div class="table-responsive premium-table-wrapper">
 
-        <tbody>
-            {% for p in pl %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
+        <table class="table premium-table align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Stock</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
 
-                <td>
-                    <img src="{{ p.pimg.url }}" width="60" height="60" 
-                         style="object-fit:cover; border-radius:6px;">
-                </td>
+            <tbody>
+                {% for p in pl %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
 
-                <td>{{ p.name }}</td>
-                <td>₹{{ p.price }}</td>
-                <td>{{ p.description|truncatechars:50 }}</td>
-                <td>{{ p.unit }}</td>
+                    <td>
+                        <img src="{{ p.pimg.url }}" class="table-product-img">
+                    </td>
 
-                <td>
-                    <a href="{% url 'product:edit' p.id %}" 
-                       class="btn btn-warning btn-sm">
-                        <i class="bi bi-pencil-square"></i>
-                    </a>
+                    <td class="fw-semibold">{{ p.name }}</td>
+                    <td class="price-text">₹{{ p.price }}</td>
+                    <td class="text-muted">{{ p.description|truncatechars:50 }}</td>
+                    <td>
+                        <span class="stock-badge">{{ p.unit }}</span>
+                    </td>
 
-                    <a href="{% url 'product:delete' p.id %}" 
-                       class="btn btn-danger btn-sm"
-                       onclick="return confirm('Are you sure to delete?');">
-                        <i class="bi bi-trash"></i>
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                    <td class="text-center">
+                        <a href="{% url 'product:edit' p.id %}" class="btn btn-edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
 
-    <!-- Pagination -->
+                        <a href="{% url 'product:delete' p.id %}"
+                           class="btn btn-delete"
+                           onclick="return confirm('Are you sure to delete?');">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- Premium Pagination -->
     <nav>
-        <ul class="pagination justify-content-center">
+        <ul class="pagination justify-content-center mt-4 premium-pagination">
             {% if pl.has_previous %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ pl.previous_page_number }}">Prev</a>
@@ -86,15 +92,113 @@
             {% endif %}
         </ul>
     </nav>
+
 </div>
+
 
 <!-- Card hover effect -->
 <style>
-.dashboard-card {
-    transition: 0.3s ease-in-out;
+/* Title */
+.premium-title {
+    background: linear-gradient(90deg, #0d6efd, #20c997);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
-.dashboard-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+
+/* Add Button */
+.btn-premium-add {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+    transition: 0.3s ease;
 }
+.btn-premium-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(34, 197, 94, 0.6);
+    color: white;
+}
+
+/* Table Wrapper */
+.premium-table-wrapper {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.12);
+    overflow: hidden;
+}
+
+/* Table */
+.premium-table thead {
+    background: linear-gradient(135deg, #0d6efd, #6366f1);
+    color: white;
+}
+.premium-table th, 
+.premium-table td {
+    padding: 14px;
+    vertical-align: middle;
+}
+.premium-table tbody tr {
+    transition: 0.25s ease;
+}
+.premium-table tbody tr:hover {
+    background: rgba(13, 110, 253, 0.04);
+    transform: scale(1.01);
+}
+
+/* Product Image */
+.table-product-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 5px 14px rgba(0,0,0,0.15);
+}
+
+/* Price */
+.price-text {
+    font-weight: 700;
+    color: #16a34a;
+}
+
+/* Stock Badge */
+.stock-badge {
+    background: linear-gradient(135deg, #facc15, #eab308);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Action Buttons */
+.btn-edit {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: white;
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-right: 6px;
+    border: none;
+}
+.btn-delete {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-radius: 8px;
+    padding: 6px 10px;
+    border: none;
+}
+
+/* Pagination */
+.premium-pagination .page-link {
+    border-radius: 8px;
+    margin: 0 4px;
+}
+.premium-pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #0d6efd, #6366f1);
+    border: none;
+    box-shadow: 0 0 10px rgba(13,110,253,0.6);
+}
+
 </style>

@@ -3,13 +3,13 @@
 
 {% block body %}
 
-
 <div class="container mt-5 d-flex justify-content-center">
     <div class="card shadow-sm p-4" style="max-width: 700px; width: 100%; border-radius: 15px;">
 
         <div class="row g-4">
 
             <div class="col-md-5">
+                <!-- Main Image -->
                 <div class="image-wrapper" style="
                     width: 100%;
                     height: 250px;
@@ -21,8 +21,27 @@
                     box-shadow: 0 4px 15px rgba(0,0,0,0.12);
                     background: #f8f8f8;
                 ">
-                    <img src="{{ product.pimg.url }}" 
-                         style="width: 100%; height: 100%; object-fit: cover; transition: 0.3s;">
+                    <div class="product-detail-slider">
+                        <img class="detail-slide active"
+                             id="mainProductImage"
+                             src="{{ product.pimg.url }}"
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                </div>
+
+                <!-- Thumbnails (Amazon style) -->
+                <div class="d-flex flex-wrap gap-2 mt-3" id="thumbsRow">
+                    <!-- Main image as first thumb -->
+                    <div class="thumb-box active-thumb">
+                        <img src="{{ product.pimg.url }}" class="thumb-img" data-index="0" alt="thumb">
+                    </div>
+
+                    <!-- Extra images -->
+                    {% for img in product.extra_images.all %}
+                        <div class="thumb-box">
+                            <img src="{{ img.image.url }}" class="thumb-img" data-index="{{ forloop.counter }}" alt="thumb">
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -32,7 +51,6 @@
                 <p style="font-size: 26px; font-weight: bold; color: #28a745;">
                     ₹{{ product.price }}
                 </p>
-                
 
                 <p class="text-secondary" style="font-size: 16px;">
                     {{ product.description }}
@@ -48,18 +66,18 @@
 
     </div>
 </div>
+
 <div class="container mt-4" style="max-width:700px;">
 
-  <!-- Product rating summary (optional) -->
-  {% with avg=product.reviews.aggregate_avg|default:"" %}
-  {% comment %} If you compute avg in view, show it. Otherwise optional. {% endcomment %}
-  {% if avg %}
+  {# Product rating summary #}
+  {% if avg_rating %}
   <div class="d-flex align-items-center mb-3">
     <h5 class="me-3 mb-0">Average Rating:</h5>
-    <div class="fw-bold" style="font-size:18px; color:#ffc107;">{{ avg|floatformat:1 }} ★</div>
+    <div class="fw-bold" style="font-size:18px; color:#ffc107;">
+      {{ avg_rating|floatformat:1 }} ★
+    </div>
   </div>
   {% endif %}
-  {% endwith %}    {# <- endwith #}
 
   <h3 class="fw-bold mb-3">User Reviews ✨</h3>
 
@@ -73,7 +91,9 @@
               {% if r.user and r.user.profile and r.user.profile.image %}
                 <img src="{{ r.user.profile.image.url }}" alt="{{ r.user.username }}" style="width:100%;height:100%;object-fit:cover;">
               {% else %}
-                <span class="text-muted" style="font-weight:700;">{{ r.user.username|slice:":1"|upper }}</span>
+                <span class="text-muted" style="font-weight:700;">
+                  {{ r.user.username|slice:":1"|upper }}
+                </span>
               {% endif %}
             </div>
           </div>
@@ -119,7 +139,9 @@
   <nav class="mt-2" aria-label="reviews pagination">
     <ul class="pagination justify-content-center">
       {% if reviews_page.has_previous %}
-        <li class="page-item"><a class="page-link" href="?page={{ reviews_page.previous_page_number }}">Previous</a></li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ reviews_page.previous_page_number }}">Previous</a>
+        </li>
       {% else %}
         <li class="page-item disabled"><span class="page-link">Previous</span></li>
       {% endif %}
@@ -133,7 +155,9 @@
       {% endfor %}
 
       {% if reviews_page.has_next %}
-        <li class="page-item"><a class="page-link" href="?page={{ reviews_page.next_page_number }}">Next</a></li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ reviews_page.next_page_number }}">Next</a>
+        </li>
       {% else %}
         <li class="page-item disabled"><span class="page-link">Next</span></li>
       {% endif %}
@@ -176,7 +200,7 @@
 
 </div>
 
-<!-- Star selection styles + script -->
+<!-- Star selection styles + thumbnail styles -->
 <style>
   .rating-stars label span {
     display: inline-block;
@@ -206,9 +230,41 @@
     outline: 2px solid rgba(13,110,253,0.18);
     outline-offset: 2px;
   }
+
+  /* 🔹 Thumbnail styles (Amazon type) */
+  .thumb-box {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    overflow: hidden;
+    cursor: pointer;
+    background: #f9fafb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s ease;
+  }
+
+  .thumb-box:hover {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+  }
+
+  .thumb-box img.thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .active-thumb {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.3);
+  }
 </style>
 
 <script>
+  // ⭐ Rating stars JS
   document.addEventListener("DOMContentLoaded", function () {
     const labels = Array.from(document.querySelectorAll(".rating-stars label"));
 
@@ -229,11 +285,9 @@
     }
 
     labels.forEach((label, idx) => {
-      // make focusable
       if (!label.hasAttribute('tabindex')) label.setAttribute('tabindex', '0');
 
-      label.addEventListener('click', function (e) {
-        // set radio checked (should happen by browser), then update visuals
+      label.addEventListener('click', function () {
         const r = radios[idx];
         if (r) r.checked = true;
         updateVisualFromChecked();
@@ -249,9 +303,56 @@
       });
     });
 
-    // initialize (in case browser restored checked state)
     updateVisualFromChecked();
   });
+
+  // 🖼️ Thumbnails + Auto Slider (Amazon style + time based)
+  document.addEventListener("DOMContentLoaded", function () {
+    const mainImg = document.getElementById("mainProductImage");
+    const thumbImgs = Array.from(document.querySelectorAll(".thumb-box .thumb-img"));
+
+    if (!mainImg || !thumbImgs.length) return;
+
+    let currentIndex = 0;
+    let intervalId = null;
+
+    function setActiveThumb(index) {
+      const boxes = document.querySelectorAll(".thumb-box");
+      boxes.forEach(b => b.classList.remove("active-thumb"));
+      if (boxes[index]) {
+        boxes[index].classList.add("active-thumb");
+      }
+    }
+
+    function showImage(index) {
+      if (index < 0 || index >= thumbImgs.length) return;
+      currentIndex = index;
+      mainImg.src = thumbImgs[currentIndex].src;
+      setActiveThumb(currentIndex);
+    }
+
+    function startSlider() {
+      if (intervalId) clearInterval(intervalId);
+      intervalId = setInterval(function () {
+        let nextIndex = (currentIndex + 1) % thumbImgs.length;
+        showImage(nextIndex);
+      }, 3000); // 3 second me next image
+    }
+
+    // Thumbnail click → particular image + slider restart
+    thumbImgs.forEach((img, idx) => {
+      const box = img.parentElement;
+      box.addEventListener("click", function () {
+        showImage(idx);
+        startSlider(); // user click ke baad bhi slider continue rahe
+      });
+    });
+
+    // Initial state
+    showImage(0);
+    startSlider();
+  });
 </script>
+
 
 {% endblock %}

@@ -123,6 +123,96 @@
 
 </div>
 
+<script>
+  // ⭐ Rating stars JS
+  document.addEventListener("DOMContentLoaded", function () {
+    const labels = Array.from(document.querySelectorAll(".rating-stars label"));
+
+    if (!labels.length) return;
+
+    const radios = labels.map(l => l.querySelector('input[type="radio"]'));
+    const spans = labels.map(l => l.querySelector('span'));
+
+    function clearSelected() {
+      spans.forEach(s => s.classList.remove('selected'));
+    }
+
+    function updateVisualFromChecked() {
+      clearSelected();
+      radios.forEach((r, idx) => {
+        if (r && r.checked) spans[idx].classList.add('selected');
+      });
+    }
+
+    labels.forEach((label, idx) => {
+      if (!label.hasAttribute('tabindex')) label.setAttribute('tabindex', '0');
+
+      label.addEventListener('click', function () {
+        const r = radios[idx];
+        if (r) r.checked = true;
+        updateVisualFromChecked();
+      });
+
+      label.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const r = radios[idx];
+          if (r) r.checked = true;
+          updateVisualFromChecked();
+        }
+      });
+    });
+
+    updateVisualFromChecked();
+  });
+
+  // 🖼️ Thumbnails + Auto Slider (Amazon style + time based)
+  document.addEventListener("DOMContentLoaded", function () {
+    const mainImg = document.getElementById("mainProductImage");
+    const thumbImgs = Array.from(document.querySelectorAll(".thumb-box .thumb-img"));
+
+    if (!mainImg || !thumbImgs.length) return;
+
+    let currentIndex = 0;
+    let intervalId = null;
+
+    function setActiveThumb(index) {
+      const boxes = document.querySelectorAll(".thumb-box");
+      boxes.forEach(b => b.classList.remove("active-thumb"));
+      if (boxes[index]) {
+        boxes[index].classList.add("active-thumb");
+      }
+    }
+
+    function showImage(index) {
+      if (index < 0 || index >= thumbImgs.length) return;
+      currentIndex = index;
+      mainImg.src = thumbImgs[currentIndex].src;
+      setActiveThumb(currentIndex);
+    }
+
+    function startSlider() {
+      if (intervalId) clearInterval(intervalId);
+      intervalId = setInterval(function () {
+        let nextIndex = (currentIndex + 1) % thumbImgs.length;
+        showImage(nextIndex);
+      }, 3000); // 3 second me next image
+    }
+
+    // Thumbnail click → particular image + slider restart
+    thumbImgs.forEach((img, idx) => {
+      const box = img.parentElement;
+      box.addEventListener("click", function () {
+        showImage(idx);
+        startSlider(); // user click ke baad bhi slider continue rahe
+      });
+    });
+
+    // Initial state
+    showImage(0);
+    startSlider();
+  });
+</script>
 
 
 {% endblock %} 

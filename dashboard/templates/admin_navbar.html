@@ -1,10 +1,15 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark main-navbar shadow-sm sticky-top">
 
-    <div class="container px-4 px-lg-5">
+    <div class="container px-3 px-lg-4">
         
-        <a class="navbar-brand fw-bold" href="/dashboard/">🛍 Grocery Platform</a>
+        <!-- BRAND -->
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="/dashboard/">
+            <span class="brand-icon me-2">📊</span>
+            <span>Grocery Platform – Admin</span>
+        </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        <!-- TOGGLER -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -13,106 +18,186 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-            <!-- LEFT SIDE NAV ITEMS -->
-            
-
-            <!-- CENTER SEARCH BAR -->
             {% if user.is_authenticated %}
-                 <form method="post" action="{% url 'product:search' %}" class="d-flex me-3 search-box">
+            <!-- LEFT SIDE: SEARCH + LINKS -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 align-items-lg-center">
 
-                    {% csrf_token %}
-                    <input class="form-control search-input" type="search" name="search"
-                           placeholder="Search products..." aria-label="Search">
-                    <button class="btn btn-primary search-btn ms-2" type="submit">Search</button>
-                </form>
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                <!-- SEARCH BAR -->
+                <li class="nav-item me-lg-3 mb-2 mb-lg-0">
+                    <form method="post" action="{% url 'product:search' %}" class="d-flex search-box">
+                        {% csrf_token %}
+                        <i class="bi bi-search search-icon"></i>
+                        <input class="form-control search-input" type="search" name="search"
+                               placeholder="Search products..." aria-label="Search">
+                        <button class="btn search-btn ms-2 d-none d-md-inline" type="submit">Search</button>
+                    </form>
+                </li>
 
-                {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link fw-semibold" href="{% url 'dashboard:p_reviews' %}">Products Reviews</a>
+                <!-- DASHBOARD LINKS -->
+                <li class="nav-item mx-lg-1 mb-2 mb-lg-0">
+                    <a class="nav-link fw-semibold nav-link-pill" href="{% url 'dashboard:p_reviews' %}">
+                        <i class="bi bi-chat-dots me-1"></i> Product Reviews
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link fw-semibold" href="{% url 'dashboard:orders' %}">All Orders</a>
+
+                <li class="nav-item mx-lg-1 mb-2 mb-lg-0">
+                    <a class="nav-link fw-semibold nav-link-pill" href="{% url 'dashboard:orders' %}">
+                        <i class="bi bi-box-seam me-1"></i> All Orders
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link fw-semibold" href="{% url 'dashboard:users' %}">All Users</a>
+
+                <li class="nav-item mx-lg-1 mb-2 mb-lg-0">
+                    <a class="nav-link fw-semibold nav-link-pill" href="{% url 'dashboard:users' %}">
+                        <i class="bi bi-people me-1"></i> All Users
+                    </a>
                 </li>
-                {% endif %}
+
             </ul>
-            <a class="btn logout-btn rounded-pill" href="{% url 'account:logout' %}">
-                Logout
-            </a>
             {% endif %}
 
             <!-- RIGHT SIDE USER INFO -->
-            <div class="d-flex align-items-center ms-3">
+            <div class="d-flex align-items-center gap-2 ms-auto mt-2 mt-lg-0">
+
                 {% if user.is_authenticated %}
-                    <span class="btn btn-outline-light rounded-pill fw-bold">
-                        Welcome {{ user.username }}
+                    <span class="welcome-chip d-none d-md-inline">
+                        <i class="bi bi-person-badge me-1"></i>
+                        Admin: {{ user.username }}
                     </span>
-                    
+
+                    <a class="btn logout-btn rounded-pill px-3" href="{% url 'account:logout' %}">
+                        <i class="bi bi-box-arrow-right me-1"></i> Logout
+                    </a>
                 {% else %}
-                    <a class="btn btn-outline-light me-2" href="{% url 'account:add' %}">Register</a>
-                    <a class="btn btn-success" href="{% url 'account:login' %}">Login</a>
+                    <a class="btn btn-outline-light rounded-pill px-3" href="{% url 'account:add' %}">
+                        <i class="bi bi-person-plus me-1"></i> Register
+                    </a>
+                    <a class="btn btn-success rounded-pill px-3" href="{% url 'account:login' %}">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                    </a>
                 {% endif %}
+
             </div>
 
         </div>
     </div>
 </nav>
 
+<!-- STYLES -->
 <style>
-.search-box {
-    background: rgb(255 255 255 / 70%);
+.main-navbar {
+    background: linear-gradient(120deg, #111827, #020617);
     backdrop-filter: blur(10px);
-    border-radius: 40px;
-    padding: 5px 15px;
-    box-shadow: 0 5px 15px rgb(0 0 0 / 15%);
+}
+
+/* BRAND */
+.navbar-brand {
+    font-size: 1.1rem;
+    letter-spacing: 0.4px;
+}
+
+.brand-icon {
+    display: inline-flex;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.08);
+}
+
+/* SEARCH */
+.search-box {
+    background: rgba(255,255,255,0.12);
+    padding: 4px 10px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    color: #cbd5f5;
+    margin-right: 6px;
+    font-size: 0.95rem;
 }
 
 .search-input {
     border: none;
     background: transparent;
     outline: none;
-    width: 100%;
-    padding-left: 10px;
-    font-size: 16px;
-    color: #333;
+    width: 180px;
+    color: #f9fafb;
+    font-size: 0.9rem;
+}
+
+.search-input::placeholder {
+    color: #9ca3af;
 }
 
 .search-btn {
-    border-radius: 30px;
-    padding: 6px 18px;
+    border-radius: 999px;
+    padding: 4px 15px;
+    background-color: #22c55e;
+    border-color: #16a34a;
+    color: #0b111f;
+    font-weight: 600;
 }
 
 .search-btn:hover {
-    transform: scale(1.05);
+    background-color: #16a34a;
+    border-color: #15803d;
 }
 
-.search-icon {
-    font-size: 20px;
-    color: #444;
-    margin-top: 8px;
-}
-</style>
-
-<style>
-.navbar-nav .nav-link:hover {
-    color: #ffc107 !important;
-    background-color: rgba(255,255,255,0.1);
-    border-radius: 8px;
-    transition: 0.3s;
+/* NAV LINKS */
+.nav-link {
+    color: #e5e7eb !important;
+    font-size: 0.95rem;
 }
 
+.nav-link-pill {
+    padding: 6px 12px !important;
+    border-radius: 999px;
+    transition: 0.25s ease;
+}
+
+.nav-link-pill:hover {
+    background: rgba(255,255,255,0.08);
+    color: #facc15 !important;
+}
+
+/* Welcome chip */
+.welcome-chip {
+    border-radius: 999px;
+    border: 1px solid rgba(148,163,184,0.7);
+    padding: 5px 12px;
+    font-size: 0.85rem;
+    color: #e5e7eb;
+    background: rgba(15,23,42,0.7);
+}
+
+/* Logout button */
 .logout-btn {
-    background-color: #e95562;
-    border-color: #e63946;
-    color: white;
+    background: #ef4444;
+    border-color: #b91c1c;
+    color: #fff;
     font-weight: 600;
 }
 
 .logout-btn:hover {
-    background-color: #b0232f;
-    border-color: #b0232f;
+    background-color: #b91c1c;
+    border-color: #991b1b;
+}
+
+/* Mobile tweaks */
+@media (max-width: 991px) {
+    .search-box {
+        width: 100%;
+        margin-top: 8px;
+    }
+    .search-input {
+        width: 100%;
+    }
 }
 </style>
+
+<!-- Bootstrap Icons (agar pehle se include nahi kiya hai to) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
